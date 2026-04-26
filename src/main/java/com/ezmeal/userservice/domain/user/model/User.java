@@ -17,7 +17,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_user", schema = "user_schema")
+@Table(name = "p_user", schema = "user_db")
 // TODO : extends Base Entity
 public class User {
 
