@@ -51,6 +51,7 @@ public class User {
 
     // Factory Methods ========================================================================
     public static User create(){
+        // TODO : Complete after extends BaseEntity
         User user = new User();
         return user;
     }
