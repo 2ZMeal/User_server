@@ -1,5 +1,6 @@
 package com.ezmeal.userservice.domain.user.model;
 
+import com.ezmeal.common.entity.BaseEntity;
 import com.ezmeal.userservice.domain.user.code.Role;
 import com.ezmeal.userservice.domain.user.code.Status;
 import jakarta.persistence.Column;
@@ -18,8 +19,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_user", schema = "user_db")
-// TODO : extends Base Entity
-public class User {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue
