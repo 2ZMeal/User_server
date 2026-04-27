@@ -1,10 +1,12 @@
 package com.ezmeal.userservice.domain.user.model;
 
 import com.ezmeal.common.entity.BaseEntity;
-import com.ezmeal.userservice.domain.user.code.Role;
+import com.ezmeal.common.enums.Role;
 import com.ezmeal.userservice.domain.user.code.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -39,12 +41,14 @@ public class User extends BaseEntity{
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
 
     @Column(name = "last_login_at", nullable = false)
     private LocalDateTime lastLoginAt;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private Status status;
 
