@@ -62,7 +62,13 @@ tasks.named('test') {
 
 tasks.register("checkGpr") {
     doLast {
-        println "gpr.user = " + providers.gradleProperty("gpr.user").orNull
-        println "gpr.token exists = " + (providers.gradleProperty("gpr.token").orNull != null)
+        def user = providers.gradleProperty("gpr.user")
+                .orElse(providers.environmentVariable("GPR_USER"))
+                .orNull
+        def token = providers.gradleProperty("gpr.token")
+                .orElse(providers.environmentVariable("GPR_TOKEN"))
+                .orNull
+        println "gpr.user exists = " + (user != null)
+        println "gpr.token exists = " + (token != null)
     }
 }
