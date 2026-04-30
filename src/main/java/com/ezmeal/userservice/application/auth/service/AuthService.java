@@ -2,6 +2,7 @@ package com.ezmeal.userservice.application.auth.service;
 
 import com.ezmeal.userservice.infrastructure.client.KeycloakAuthClient;
 import com.ezmeal.userservice.infrastructure.client.dto.KeycloakTokenResponse;
+import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
 import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
@@ -58,5 +59,18 @@ public class AuthService {
         KeycloakTokenResponse tokenResponse = keycloakAuthClient.reissue(form);
 
         return tokenResponse.toResponse();
+    }
+
+    /**
+     * Logs out the user via Keycloak and invalidates the session.
+     * @param request refresh token
+     */
+    public void logout(LogoutRequest request) {
+        MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+        form.add("client_id", clientId);
+        form.add("client_secret", clientSecret);
+        form.add("refresh_token", request.refreshToken());
+
+        keycloakAuthClient.logout(form);
     }
 }

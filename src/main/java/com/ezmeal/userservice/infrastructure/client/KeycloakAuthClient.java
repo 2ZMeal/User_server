@@ -24,4 +24,10 @@ public interface KeycloakAuthClient {
         consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
     KeycloakTokenResponse reissue(@RequestBody MultiValueMap<String, String> form);
+
+    @PostMapping(
+        value = "/realms/${keycloak.realm}/protocol/openid-connect/logout",
+        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+    )
+    void logout(@RequestBody MultiValueMap<String, String> form);
 }
