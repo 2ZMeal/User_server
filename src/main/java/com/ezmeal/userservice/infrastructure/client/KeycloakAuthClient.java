@@ -17,13 +17,7 @@ public interface KeycloakAuthClient {
         value = "/realms/${keycloak.realm}/protocol/openid-connect/token",
         consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
     )
-    KeycloakTokenResponse issueToken(@RequestBody MultiValueMap<String, String> form);
-
-    @PostMapping(
-        value = "/realms/${keycloak.realm}/protocol/openid-connect/token",
-        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
-    )
-    KeycloakTokenResponse reissue(@RequestBody MultiValueMap<String, String> form);
+    KeycloakTokenResponse getToken(@RequestBody MultiValueMap<String, String> form);
 
     @PostMapping(
         value = "/realms/${keycloak.realm}/protocol/openid-connect/logout",

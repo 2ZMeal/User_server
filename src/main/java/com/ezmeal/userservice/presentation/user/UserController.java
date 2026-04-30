@@ -1,7 +1,9 @@
 package com.ezmeal.userservice.presentation.user;
 
 import com.ezmeal.common.response.CommonApiResponse;
+import com.ezmeal.common.security.principal.CustomUserPrincipal;
 import com.ezmeal.userservice.application.auth.service.AuthService;
+import com.ezmeal.userservice.presentation.user.payload.ChangePasswordRequest;
 import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
 import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
@@ -9,8 +11,11 @@ import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +45,16 @@ public class UserController {
         @RequestBody LogoutRequest request
     ) {
         authService.logout(request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
+    }
+
+    @PatchMapping("/me/password")
+    public ResponseEntity<CommonApiResponse<Void>> changePassword(
+        @AuthenticationPrincipal CustomUserPrincipal principal,
+        @RequestHeader("X-User-Email") String email,
+        @RequestBody ChangePasswordRequest request
+    ) {
+        authService.changePassword(principal.getUserId(),  email, request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
     }
 }
