@@ -1,5 +1,6 @@
 package com.ezmeal.userservice.domain.useraddress.model;
 
+import com.ezmeal.common.entity.BaseEntity;
 import com.ezmeal.userservice.domain.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,9 +19,8 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_user_address", schema = "user_db")
-// TODO : extends Base Entity
-public class UserAddress {
+@Table(name = "p_user_address")
+public class UserAddress extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -35,7 +35,7 @@ public class UserAddress {
     @Column(name="road_name_address", nullable = false)
     private String roadNameAddress;
 
-    @Column(name="lot_number_address", nullable = false)
+    @Column(name="lot_number_address")
     private String lotNumberAddress;
 
     @Column(name="zip_code", nullable = false)

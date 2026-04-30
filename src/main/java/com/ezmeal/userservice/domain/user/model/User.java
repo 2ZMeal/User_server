@@ -20,7 +20,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_user", schema = "user_db")
+@Table(name = "p_user")
 public class User extends BaseEntity{
 
     @Id
@@ -29,7 +29,10 @@ public class User extends BaseEntity{
     @Column(name="id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name="nickname", nullable = false, unique = true)
+    @Column(name="keycloak_id", updatable = false, nullable = false)
+    private String keycloakId;
+
+    @Column(name="nickname", unique = true)
     private String nickname;
 
     @Column(name="name", nullable = false)
@@ -42,7 +45,7 @@ public class User extends BaseEntity{
     @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column(name = "last_login_at", nullable = false)
+    @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
     @Enumerated(EnumType.STRING)
