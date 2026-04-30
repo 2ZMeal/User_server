@@ -39,6 +39,7 @@ public class UserController {
     public ResponseEntity<CommonApiResponse<Void>> logout(
         @RequestBody LogoutRequest request
     ) {
+        authService.logout(request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
     }
 }
