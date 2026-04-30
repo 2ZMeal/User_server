@@ -30,10 +30,7 @@ public class AuthService {
         form.add("client_id", clientId);
         form.add("username", request.email());
         form.add("password", request.password());
-
-        if (clientSecret != null && !clientSecret.isBlank()) {
-            form.add("client_secret", clientSecret);
-        }
+        form.add("client_secret", clientSecret);
 
         KeycloakTokenResponse tokenResponse = keycloakAuthClient.issueToken(form);
 
