@@ -25,6 +25,11 @@ public class AuthService {
     @Value("${keycloak.client-secret}")
     private String clientSecret;
 
+    /**
+     * Authenticates a user via Keycloak and returns an access token.
+     * @param request ID/PW
+     * @return {@link TokenResponse}
+     */
     public TokenResponse signIn(SignInRequest request) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "password");
@@ -38,6 +43,11 @@ public class AuthService {
         return tokenResponse.toResponse();
     }
 
+    /**
+     * Refreshes the access token via Keycloak using a refresh token.
+     * @param request refresh token
+     * @return {@link TokenResponse}
+     */
     public TokenResponse reissue(ReissueRequest request) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "refresh_token");
