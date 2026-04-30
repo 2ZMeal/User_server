@@ -22,10 +22,6 @@ public class UserController {
     public ResponseEntity<CommonApiResponse<SignInResponse>> signIn(
         @RequestBody SignInRequest request
     ) {
-        SignInResponse response = authService.signIn(request);
-
-        return ResponseEntity.ok(
-            CommonApiResponse.success(response)
-        );
+        return ResponseEntity.ok(CommonApiResponse.success(authService.signIn(request)));
     }
 }
