@@ -1,6 +1,6 @@
 package com.ezmeal.userservice.infrastructure.client.dto;
 
-import com.ezmeal.userservice.presentation.user.payload.SignInResponse;
+import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,7 +22,7 @@ public record KeycloakTokenResponse(
     @JsonProperty("token_type")
     String tokenType
 ) {
-    public SignInResponse toResponse() {
-        return new SignInResponse(accessToken, refreshToken, expiresIn, refreshExpiresIn, tokenType);
+    public TokenResponse toResponse() {
+        return new TokenResponse(accessToken, refreshToken, expiresIn, refreshExpiresIn, tokenType);
     }
 }
