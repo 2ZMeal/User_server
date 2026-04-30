@@ -1,6 +1,13 @@
 package com.ezmeal.userservice.presentation.user;
 
+import com.ezmeal.common.response.CommonApiResponse;
+import com.ezmeal.userservice.application.auth.service.AuthService;
+import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
+import com.ezmeal.userservice.presentation.user.payload.SignInResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -8,4 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
+
+    private final AuthService authService;
+
+    @PostMapping("/signin")
+    public ResponseEntity<CommonApiResponse<SignInResponse>> signIn(
+        @RequestBody SignInRequest request
+    ) {
+        SignInResponse response = authService.signIn(request);
+
+        return ResponseEntity.ok(
+            CommonApiResponse.success(response)
+        );
+    }
 }
