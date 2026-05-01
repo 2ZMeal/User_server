@@ -1,7 +1,7 @@
 package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.exception.types.NotFoundException;
-import com.ezmeal.userservice.domain.exception.code.ResponseCode;
+import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.domain.user.repos.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

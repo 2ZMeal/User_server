@@ -2,7 +2,7 @@ package com.ezmeal.userservice.presentation.user;
 
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
-import com.ezmeal.userservice.application.auth.service.AuthService;
+import com.ezmeal.userservice.application.auth.service.UserService;
 import com.ezmeal.userservice.presentation.user.payload.ChangePasswordRequest;
 import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
 import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
@@ -15,7 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,27 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/signin")
     public ResponseEntity<CommonApiResponse<TokenResponse>> signIn(
         @RequestBody SignInRequest request
     ) {
-        return ResponseEntity.ok(CommonApiResponse.success(authService.signIn(request)));
+        return ResponseEntity.ok(CommonApiResponse.success(userService.signIn(request)));
     }
 
     @PostMapping("/reissue")
     public ResponseEntity<CommonApiResponse<TokenResponse>> reissue(
         @RequestBody ReissueRequest request
     ) {
-        return ResponseEntity.ok(CommonApiResponse.success(authService.reissue(request)));
+        return ResponseEntity.ok(CommonApiResponse.success(userService.reissue(request)));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<CommonApiResponse<Void>> logout(
         @RequestBody LogoutRequest request
     ) {
-        authService.logout(request);
+        userService.logout(request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
     }
 
@@ -53,7 +52,7 @@ public class UserController {
         @AuthenticationPrincipal CustomUserPrincipal principal,
         @RequestBody ChangePasswordRequest request
     ) {
-        authService.changePassword(principal.getUserId(), principal.getEmail(), request);
+        userService.changePassword(principal.getUserId(), principal.getEmail(), request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
     }
 }

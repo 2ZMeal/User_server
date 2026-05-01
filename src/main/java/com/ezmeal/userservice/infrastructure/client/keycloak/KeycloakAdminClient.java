@@ -1,7 +1,6 @@
-package com.ezmeal.userservice.infrastructure.client;
+package com.ezmeal.userservice.infrastructure.client.keycloak;
 
-import com.ezmeal.userservice.infrastructure.client.dto.ResetPasswordRequest;
-import java.util.Map;
+import com.ezmeal.userservice.infrastructure.client.keycloak.dto.KeycloakPasswordUpdateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,6 @@ public interface KeycloakAdminClient {
     void resetPassword(
         @RequestHeader("Authorization") String authorization,
         @PathVariable String userId,
-        @RequestBody ResetPasswordRequest request
+        @RequestBody KeycloakPasswordUpdateRequest request
     );
 }

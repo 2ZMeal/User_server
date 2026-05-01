@@ -1,4 +1,4 @@
-package com.ezmeal.userservice.infrastructure.client.dto;
+package com.ezmeal.userservice.infrastructure.client.keycloak.dto;
 
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

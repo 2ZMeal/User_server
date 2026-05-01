@@ -1,6 +1,6 @@
-package com.ezmeal.userservice.infrastructure.client;
+package com.ezmeal.userservice.infrastructure.client.keycloak;
 
-import com.ezmeal.userservice.infrastructure.client.dto.KeycloakTokenResponse;
+import com.ezmeal.userservice.infrastructure.client.keycloak.dto.KeycloakTokenResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.util.MultiValueMap;
