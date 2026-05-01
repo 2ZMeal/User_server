@@ -1,5 +1,8 @@
 package com.ezmeal.userservice.application.auth.service;
 
+import com.ezmeal.common.exception.types.InternalServerError;
+import com.ezmeal.userservice.application.user.service.UserReadService;
+import com.ezmeal.userservice.domain.exception.code.ResponseCode;
 import com.ezmeal.userservice.infrastructure.client.KeycloakAdminClient;
 import com.ezmeal.userservice.infrastructure.client.KeycloakAuthClient;
 import com.ezmeal.userservice.infrastructure.client.dto.KeycloakTokenResponse;
@@ -24,6 +27,7 @@ public class AuthService {
 
     private final KeycloakAuthClient keycloakAuthClient;
     private final KeycloakAdminClient keycloakAdminClient;
+    private final UserReadService userReadService;
 
     @Value("${keycloak.client.client-id}")
     private String clientId;
@@ -85,20 +89,36 @@ public class AuthService {
         keycloakAuthClient.logout(form);
     }
 
+    /**
+     * Change User's password via Keycloak
+     * @param userId id from p_user
+     * @param email user's email(login_id)
+     * @param request {@link ChangePasswordRequest}
+     */
     @Transactional
-    public void changePassword(String keycloakUserId, String email, ChangePasswordRequest request) {
+    public void changePassword(String userId, String email, ChangePasswordRequest request) {
         // 1. validate current password
         validateCurrentPassword(email, request.currentPassword());
 
+        // 2. get admin access token
         String adminAccessToken = issueAdminAccessToken();
 
+        // 3. get user's keycloak id via user id
+        String keycloakId = userReadService.getKeycloakId(userId);
+
+        // 4. send request as Keycloak admin
         keycloakAdminClient.resetPassword(
             "Bearer " + adminAccessToken,
-            keycloakUserId,
+            keycloakId,
             ResetPasswordRequest.of(request.newPassword())
         );
     }
 
+    /**
+     * validate User's current Password
+     * @param email User's email
+     * @param currentPassword entered password by user
+     */
     private void validateCurrentPassword(String email, String currentPassword) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
@@ -111,10 +131,15 @@ public class AuthService {
         try {
             keycloakAuthClient.getToken(form);
         } catch (Exception e) {
-            throw new IllegalArgumentException("password incorrect");
+            log.error("AuthService :: validateCurrentPassword() - failed to validate password via keycloak");
+            throw new InternalServerError(ResponseCode.INTERNAL_SERVER_ERROR);
         }
     }
 
+    /**
+     * Get admin token via keycloak
+     * @return {@link KeycloakTokenResponse}
+     */
     private String issueAdminAccessToken() {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
 
@@ -125,7 +150,8 @@ public class AuthService {
         KeycloakTokenResponse tokenResponse = keycloakAuthClient.getToken(form);
 
         if(tokenResponse.accessToken() == null || tokenResponse.accessToken().isBlank()) {
-            throw new IllegalArgumentException("failed to get admin token via keycloak");
+            log.error("AuthService :: issueAdminAccessToken() - failed to get admin token via keycloak");
+            throw new InternalServerError(ResponseCode.INTERNAL_SERVER_ERROR);
         }
 
         return tokenResponse.accessToken();

@@ -51,10 +51,9 @@ public class UserController {
     @PatchMapping("/me/password")
     public ResponseEntity<CommonApiResponse<Void>> changePassword(
         @AuthenticationPrincipal CustomUserPrincipal principal,
-        @RequestHeader("X-User-Email") String email,
         @RequestBody ChangePasswordRequest request
     ) {
-        authService.changePassword(principal.getUserId(),  email, request);
+        authService.changePassword(principal.getUserId(), principal.getEmail(), request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
     }
 }
