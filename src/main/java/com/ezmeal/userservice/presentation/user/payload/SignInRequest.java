@@ -5,4 +5,8 @@ public record SignInRequest(
     String password
 ) {
 
+    @Override
+    public String toString() {
+        return "SignInRequest[email=%s, password=****]".formatted(email);
+    }
 }
