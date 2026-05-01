@@ -32,13 +32,13 @@ public class UserAddress extends BaseEntity {
     @JoinColumn(name="user_id", updatable = false, nullable = false)
     private User user;
 
-    @Column(name="road_name_address", nullable = false)
+    @Column(name="road_name_address", nullable = false, length=256)
     private String roadNameAddress;
 
-    @Column(name="lot_number_address")
+    @Column(name="lot_number_address", length=256)
     private String lotNumberAddress;
 
-    @Column(name="zip_code", nullable = false)
+    @Column(name="zip_code", nullable = false, length = 10)
     private String zipCode;
 
     @Column(name="is_default", nullable = false)

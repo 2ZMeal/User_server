@@ -29,27 +29,27 @@ public class User extends BaseEntity{
     @Column(name="id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name="keycloak_id", updatable = false, nullable = false)
+    @Column(name="keycloak_id", updatable = false, nullable = false, length = 50)
     private String keycloakId;
 
-    @Column(name="nickname", unique = true)
+    @Column(name="nickname", unique = true, length = 20)
     private String nickname;
 
-    @Column(name="name", nullable = false)
+    @Column(name="name", nullable = false, length = 10)
     private String name;
 
-    @Column(name="email", nullable = false, unique = true)
+    @Column(name="email", nullable = false, unique = true, length=30)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length=10)
     private Role role;
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length=10)
     private Status status;
 
 
