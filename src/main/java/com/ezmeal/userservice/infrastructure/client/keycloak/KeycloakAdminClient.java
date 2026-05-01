@@ -16,7 +16,7 @@ public interface KeycloakAdminClient {
 
     @PutMapping(
         value = "/admin/realms/${keycloak.realm}/users/{userId}/reset-password",
-        consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE
+        consumes = MediaType.APPLICATION_JSON_VALUE
     )
     void resetPassword(
         @RequestHeader("Authorization") String authorization,
