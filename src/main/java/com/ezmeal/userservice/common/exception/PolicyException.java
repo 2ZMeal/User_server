@@ -8,9 +8,4 @@ import lombok.extern.slf4j.Slf4j;
 public class PolicyException extends CustomException {
 
     public PolicyException(ResponseCode code) {super(code);}
-
-    public PolicyException(ResponseCode code, Exception e) {
-        super(code);
-        log.error(e.getMessage(), e);
-    }
 }
