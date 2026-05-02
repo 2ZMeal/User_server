@@ -68,7 +68,7 @@ public interface KeycloakAdminClient {
         @PathVariable String userId
     );
 
-    @PostMapping(
+    @PutMapping(
         value="/admin/realms/${keycloak.realm}/users/{userId}",
         consumes = MediaType.APPLICATION_JSON_VALUE
     )
