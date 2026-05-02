@@ -2,6 +2,7 @@ package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.enums.Role;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
+import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.domain.user.model.User;
@@ -16,6 +17,7 @@ import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final ApplicationEventPublisher eventPublisher;
     private final KeycloakAuthAdapter keycloakAuthAdapter;
     private final KeycloakAdminAdapter keycloakAdminAdapter;
     private final UserReadService userReadService;
@@ -103,6 +106,8 @@ public class UserService {
                 keycloakId,
                 user.getId().toString()
             );
+
+            eventPublisher.publishEvent( UserCreateApplicationEvent.from(user));
 
             return keycloakAuthAdapter.getTokenResponse(command.email(), command.password()).toResponse();
         } catch (Exception e) {
