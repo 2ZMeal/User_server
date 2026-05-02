@@ -124,7 +124,7 @@ public class UserService {
      * @param role
      */
     private void validateSignUpRole(Role role) {
-        if(role == Role.ADMIN) {
+        if(role == null || role == Role.ADMIN) {
             throw new PolicyException(ResponseCode.FORBIDDEN);
         }
     }
