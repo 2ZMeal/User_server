@@ -87,7 +87,7 @@ public class UserController {
         )));
     }
 
-    @Operation(summary = "회원 목록 조회", description = "회원 목록을 조회합니다.<br>ADMIN 권한만 가능합니다.")
+    @Operation(summary = "[관리자] 회원 목록 조회", description = "회원 목록을 조회합니다.<br>ADMIN 권한만 가능합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<UserDetailsPageResponse>> getUserList(
         @AuthenticationPrincipal CustomUserPrincipal principal,
@@ -99,6 +99,7 @@ public class UserController {
        ));
     }
 
+    @Operation(summary = "[관리자] 회원 상세 조회", description = "회원을 상세 조회합니다.<br>ADMIN 권한만 가능합니다.")
     @GetMapping
     public ResponseEntity<CommonApiResponse<UserDetailsResponse>> getUserDetails(
         @AuthenticationPrincipal CustomUserPrincipal principal
