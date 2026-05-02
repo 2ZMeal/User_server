@@ -93,7 +93,7 @@ public class UserService {
                 command.toKeycloakCreateUserCommand()
             );
 
-            user = userRepository.save(
+            user = userRepository.saveAndFlush(
                 User.create(command.toCreateUserCommand(keycloakId))
             );
 

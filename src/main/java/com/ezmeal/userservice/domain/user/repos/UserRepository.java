@@ -9,5 +9,6 @@ public interface UserRepository {
     Optional<User> findActive(UUID userId);
     Optional<User> findActive(String email);
     User save(User user);
+    User saveAndFlush(User user);
     void delete(User user);
 }
