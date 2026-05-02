@@ -59,7 +59,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<CommonApiResponse<TokenResponse>> signup(
-        @RequestBody SignUpRequest request
+        @RequestBody @Valid SignUpRequest request
     ) {
         return ResponseEntity.ok(CommonApiResponse.success(userService.signUp(request.toCommand())));
     }
