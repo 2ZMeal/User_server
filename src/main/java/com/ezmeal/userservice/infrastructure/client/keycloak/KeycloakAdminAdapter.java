@@ -125,7 +125,8 @@ public class KeycloakAdminAdapter {
             );
             throw KeycloakExceptionMapper.map(e, KeycloakOperation.UPDATE_USER_ATTRIBUTE);
         } catch (Exception e) {
-            log.error("KeycloakAdminAdapter :: updateServiceUserIdAttribute() - unexpected error", e);
+            log.error("KeycloakAdminAdapter :: updateServiceUserIdAttribute() - unexpected error",
+                e);
             throw new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
         }
     }
@@ -177,8 +178,10 @@ public class KeycloakAdminAdapter {
     }
 
     // HELPER METHODS ==================================================
+
     /**
      * Get admin token via keycloak
+     *
      * @return {@code String} - access token
      */
     private String issueAdminAccessToken() {
