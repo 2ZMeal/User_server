@@ -7,4 +7,7 @@ import java.util.UUID;
 public interface UserRepository {
 
     Optional<User> findActive(UUID userId);
+    Optional<User> findActive(String email);
+    User save(User user);
+    void delete(User user);
 }

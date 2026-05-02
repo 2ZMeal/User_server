@@ -2,6 +2,7 @@ package com.ezmeal.userservice.domain.user.model;
 
 import com.ezmeal.common.entity.BaseEntity;
 import com.ezmeal.common.enums.Role;
+import com.ezmeal.userservice.application.user.dto.CreateUserCommand;
 import com.ezmeal.userservice.domain.user.code.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -54,9 +55,15 @@ public class User extends BaseEntity{
 
 
     // Factory Methods ========================================================================
-    public static User create(){
-        // TODO : Complete after extends BaseEntity
+    public static User create(CreateUserCommand command){
         User user = new User();
+        user.keycloakId = command.keycloakId();
+        user.nickname = !command.nickname().isBlank() ? command.nickname() : command.name();
+        user.name = command.name();
+        user.email = command.email();
+        user.role = command.role();
+        user.lastLoginAt = LocalDateTime.now();
+        user.status = Status.ENABLED;
         return user;
     }
 }
