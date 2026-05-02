@@ -6,4 +6,5 @@ import lombok.NoArgsConstructor;
 public final class KafkaTopics {
 
     public static final String USER_CREATED = "user.created";
+    public static final String USER_DELETED = "user.deleted";
 }
