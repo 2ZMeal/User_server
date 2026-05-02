@@ -157,7 +157,7 @@ public final class KeycloakExceptionMapper {
         }
 
         if (status == 400) {
-            return new CustomException(ResponseCode.KEYCLOAK_INVALID_GRANT);
+            return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
         }
 
         if (status == 401 || status == 403) {
