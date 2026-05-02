@@ -66,4 +66,8 @@ public class User extends BaseEntity{
         user.status = Status.ENABLED;
         return user;
     }
+
+    public void disable() {
+        this.status = Status.DISABLED;
+    }
 }
