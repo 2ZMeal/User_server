@@ -2,6 +2,7 @@ package com.ezmeal.userservice.presentation.user;
 
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
+import com.ezmeal.userservice.application.user.service.UserReadService;
 import com.ezmeal.userservice.application.user.service.UserService;
 import com.ezmeal.userservice.presentation.user.payload.ChangePasswordRequest;
 import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
@@ -9,11 +10,14 @@ import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import com.ezmeal.userservice.presentation.user.payload.UserResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final UserReadService userReadService;
 
     @PostMapping("/signin")
     public ResponseEntity<CommonApiResponse<TokenResponse>> signIn(
@@ -63,5 +68,14 @@ public class UserController {
         @RequestBody @Valid SignUpRequest request
     ) {
         return ResponseEntity.ok(CommonApiResponse.success(userService.signUp(request.toCommand())));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CommonApiResponse<UserResponse>> getUserDetails(
+        @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        return ResponseEntity.ok(CommonApiResponse.success(UserResponse.of(
+            userReadService.getUser(UUID.fromString(principal.getUserId()))
+        )));
     }
 }
