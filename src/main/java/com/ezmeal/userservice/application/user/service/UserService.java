@@ -1,6 +1,7 @@
 package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.enums.Role;
+import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
 import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
@@ -15,6 +16,7 @@ import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -114,6 +116,22 @@ public class UserService {
             compensateSignUpFailure(keycloakId, user);
             throw e;
         }
+    }
+
+    /**
+     * Handle User's withdraw request
+     * @param userId
+     */
+    @Transactional
+    public void withdraw(UUID userId) {
+        User user = userRepository.findActive(userId)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.USER_NOT_FOUND));
+
+        keycloakAdminAdapter.deleteUser(user.getKeycloakId());
+
+        user.delete(userId.toString());
+
+        userRepository.save(user);
     }
 
 
