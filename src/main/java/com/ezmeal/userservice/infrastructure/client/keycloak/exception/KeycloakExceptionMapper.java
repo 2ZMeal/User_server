@@ -18,6 +18,10 @@ public final class KeycloakExceptionMapper {
             case CHANGE_PASSWORD -> mapChangePassword(e);
             case REISSUE_TOKEN -> mapReissueToken(e);
             case LOGOUT -> mapLogout(e);
+            case CREATE_USER -> mapCreateUser(e);
+            case ASSIGN_REALM_ROLE -> mapAssignRealmRole(e);
+            case UPDATE_USER_ATTRIBUTE -> mapUpdateUserAttribute(e);
+            case DELETE_USER -> mapDeleteUser(e);
         };
     }
 
@@ -85,5 +89,103 @@ public final class KeycloakExceptionMapper {
 
     private static boolean isKeycloakUnavailable(int status) {
         return status == 503 || status == 504 || status == -1;
+    }
+
+    private static CustomException mapCreateUser(FeignException e) {
+        int status = e.status();
+
+        if(isKeycloakUnavailable(status)) {
+            return new CustomException(ResponseCode.KEYCLOAK_UNAVAILABLE);
+        }
+
+        if(status == 409) {
+            return new CustomException(ResponseCode.USER_ALREADY_EXISTS);
+        }
+
+        if(status == 400) {
+            return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+        }
+
+        if(status == 401 || status == 403) {
+            return new CustomException(ResponseCode.KEYCLOAK_TOKEN_ISSUE_FAILED);
+        }
+
+        return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+    }
+
+    private static CustomException mapAssignRealmRole(FeignException e) {
+        int status = e.status();
+
+        if (status == 404) {
+            return new CustomException(ResponseCode.KEYCLOAK_ROLE_NOT_FOUND);
+        }
+
+        if (status == 401 || status == 403) {
+            return new CustomException(ResponseCode.KEYCLOAK_TOKEN_ISSUE_FAILED);
+        }
+
+        if (isKeycloakUnavailable(status)) {
+            return new CustomException(ResponseCode.KEYCLOAK_UNAVAILABLE);
+        }
+
+        return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+    }
+
+    private static CustomException mapGetUser(FeignException e) {
+        int status = e.status();
+
+        if (status == 404) {
+            return new CustomException(ResponseCode.KEYCLOAK_USER_NOT_FOUND);
+        }
+
+        if (status == 401 || status == 403) {
+            return new CustomException(ResponseCode.KEYCLOAK_TOKEN_ISSUE_FAILED);
+        }
+
+        if (isKeycloakUnavailable(status)) {
+            return new CustomException(ResponseCode.KEYCLOAK_UNAVAILABLE);
+        }
+
+        return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+    }
+
+    private static CustomException mapUpdateUserAttribute(FeignException e) {
+        int status = e.status();
+
+        if (status == 404) {
+            return new CustomException(ResponseCode.KEYCLOAK_USER_NOT_FOUND);
+        }
+
+        if (status == 400) {
+            return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+        }
+
+        if (status == 401 || status == 403) {
+            return new CustomException(ResponseCode.KEYCLOAK_TOKEN_ISSUE_FAILED);
+        }
+
+        if (isKeycloakUnavailable(status)) {
+            return new CustomException(ResponseCode.KEYCLOAK_UNAVAILABLE);
+        }
+
+        return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+    }
+
+    private static CustomException mapDeleteUser(FeignException e) {
+        int status = e.status();
+
+        if (status == 404) {
+            return new CustomException(ResponseCode.KEYCLOAK_USER_NOT_FOUND);
+        }
+
+        if (status == 401 || status == 403) {
+            return new CustomException(ResponseCode.KEYCLOAK_TOKEN_ISSUE_FAILED);
+        }
+
+        if (isKeycloakUnavailable(status)) {
+            return new CustomException(ResponseCode.KEYCLOAK_UNAVAILABLE);
+        }
+
+        return new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
     }
 }

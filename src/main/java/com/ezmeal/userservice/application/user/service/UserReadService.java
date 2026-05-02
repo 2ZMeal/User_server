@@ -20,4 +20,8 @@ public class UserReadService {
             .orElseThrow(() -> new NotFoundException(ResponseCode.USER_NOT_FOUND))
             .getKeycloakId();
     }
+
+    public Boolean isEmailExists(String email) {
+        return userRepository.findActive(email).isPresent();
+    }
 }

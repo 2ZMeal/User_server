@@ -1,13 +1,13 @@
 package com.ezmeal.userservice.infrastructure.client.keycloak.dto;
 
-public record KeycloakPasswordUpdateRequest(
+public record KeycloakCredentialRequest(
     String type,
     String value,
     Boolean temporary
 ) {
 
-    public static KeycloakPasswordUpdateRequest of(String newPassword) {
-        return new KeycloakPasswordUpdateRequest(
+    public static KeycloakCredentialRequest of(String newPassword) {
+        return new KeycloakCredentialRequest(
             "password",
             newPassword,
             false

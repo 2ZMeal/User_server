@@ -2,12 +2,14 @@ package com.ezmeal.userservice.presentation.user;
 
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
-import com.ezmeal.userservice.application.auth.service.UserService;
+import com.ezmeal.userservice.application.user.service.UserService;
 import com.ezmeal.userservice.presentation.user.payload.ChangePasswordRequest;
 import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
 import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
+import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +56,12 @@ public class UserController {
     ) {
         userService.changePassword(principal.getUserId(), principal.getEmail(), request);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(CommonApiResponse.success());
+    }
+
+    @PostMapping("/signup")
+    public ResponseEntity<CommonApiResponse<TokenResponse>> signup(
+        @RequestBody @Valid SignUpRequest request
+    ) {
+        return ResponseEntity.ok(CommonApiResponse.success(userService.signUp(request.toCommand())));
     }
 }
