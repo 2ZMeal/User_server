@@ -24,7 +24,7 @@ public record SignUpRequest(
     @Size(max=10)
     String name,
 
-    @NotBlank
+    @NotNull
     Role role
 ) {
 
