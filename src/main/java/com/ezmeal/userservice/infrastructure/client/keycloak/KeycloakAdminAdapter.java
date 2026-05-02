@@ -219,7 +219,20 @@ public class KeycloakAdminAdapter {
         }
 
         String path = location.getPath();
-        return path.substring(path.lastIndexOf('/') + 1);
+        if (path == null || path.isBlank()) {
+            log.error("KeycloakAdminAdapter :: extractKeycloakUserId() - Location path is empty");
+            throw new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+        }
+
+        String userId = path.substring(path.lastIndexOf('/') + 1);
+        if (userId.isBlank()) {
+            log.error(
+                "KeycloakAdminAdapter :: extractKeycloakUserId() - Extracted userId is blank. location={}",
+                location);
+            throw new CustomException(ResponseCode.KEYCLOAK_REQUEST_FAILED);
+        }
+
+        return userId;
     }
 
     // CREATE FORM =====================================================
