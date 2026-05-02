@@ -78,7 +78,7 @@ public class UserService {
      * @param command {@link SignUpRequest}
      */
     @Transactional
-    public TokenResponse SignUp(SignUpCommand command) {
+    public TokenResponse signUp(SignUpCommand command) {
         validateSignUpRole(command.role());
         validateEmailExists(command.email());
 

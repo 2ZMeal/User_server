@@ -58,10 +58,9 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<CommonApiResponse<Void>> signup(
+    public ResponseEntity<CommonApiResponse<TokenResponse>> signup(
         @RequestBody SignUpRequest request
     ) {
-        userService.signup(request.toCommand());
-        return ResponseEntity.ok(CommonApiResponse.success());
+        return ResponseEntity.ok(CommonApiResponse.success(userService.signUp(request.toCommand())));
     }
 }
