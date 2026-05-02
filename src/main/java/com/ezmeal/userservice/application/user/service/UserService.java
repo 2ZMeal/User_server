@@ -129,6 +129,7 @@ public class UserService {
 
         keycloakAdminAdapter.deleteUser(user.getKeycloakId());
 
+        user.disable();
         user.delete(userId.toString());
 
         userRepository.save(user);

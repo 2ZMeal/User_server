@@ -141,6 +141,13 @@ public class KeycloakAdminAdapter {
             );
 
         } catch (FeignException e) {
+            if(e.status() == 404) {
+                log.info(
+                    "KeycloakAdminAdapter :: deleteUser() - user already deleted. keycloakUserId={}",
+                    keycloakUserId
+                );
+                return;
+            }
             log.error(
                 "KeycloakAdminAdapter :: deleteUser() - failed. status={}, keycloakUserId={}",
                 e.status(),

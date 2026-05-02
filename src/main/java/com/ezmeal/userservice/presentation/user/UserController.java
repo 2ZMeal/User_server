@@ -28,6 +28,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,9 +102,10 @@ public class UserController {
     }
 
     @Operation(summary = "[관리자] 회원 상세 조회", description = "회원을 상세 조회합니다.<br>ADMIN 권한만 가능합니다.")
-    @GetMapping
+    @GetMapping("/{userId}")
     public ResponseEntity<CommonApiResponse<UserDetailsResponse>> getUserDetails(
-        @AuthenticationPrincipal CustomUserPrincipal principal
+        @AuthenticationPrincipal CustomUserPrincipal principal,
+        @PathVariable(value="userId") String id
     ) {
         validateRoleAdmin(principal.getRole());
         return ResponseEntity.ok(CommonApiResponse.success(
