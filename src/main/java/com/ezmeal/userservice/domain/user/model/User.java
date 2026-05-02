@@ -58,7 +58,7 @@ public class User extends BaseEntity{
     public static User create(CreateUserCommand command){
         User user = new User();
         user.keycloakId = command.keycloakId();
-        user.nickname = !command.nickname().isBlank() ? command.nickname() : command.name();
+        user.nickname = command.nickname() != null ? command.nickname() : command.name();
         user.name = command.name();
         user.email = command.email();
         user.role = command.role();
