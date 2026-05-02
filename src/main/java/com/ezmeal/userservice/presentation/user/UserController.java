@@ -1,19 +1,27 @@
 package com.ezmeal.userservice.presentation.user;
 
+import com.ezmeal.common.enums.Role;
+import com.ezmeal.common.exception.types.ForbiddenException;
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
 import com.ezmeal.userservice.application.user.service.UserReadService;
 import com.ezmeal.userservice.application.user.service.UserService;
+import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.presentation.user.payload.ChangePasswordRequest;
 import com.ezmeal.userservice.presentation.user.payload.LogoutRequest;
 import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import com.ezmeal.userservice.presentation.user.payload.UserDetailsPageResponse;
+import com.ezmeal.userservice.presentation.user.payload.UserDetailsResponse;
 import com.ezmeal.userservice.presentation.user.payload.UserResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -71,11 +79,39 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<CommonApiResponse<UserResponse>> getUserDetails(
+    public ResponseEntity<CommonApiResponse<UserResponse>> getUser(
         @AuthenticationPrincipal CustomUserPrincipal principal
     ) {
         return ResponseEntity.ok(CommonApiResponse.success(UserResponse.of(
             userReadService.getUser(UUID.fromString(principal.getUserId()))
         )));
+    }
+
+    @Operation(summary = "회원 목록 조회", description = "회원 목록을 조회합니다.<br>ADMIN 권한만 가능합니다.")
+    @GetMapping
+    public ResponseEntity<CommonApiResponse<UserDetailsPageResponse>> getUserList(
+        @AuthenticationPrincipal CustomUserPrincipal principal,
+        @PageableDefault(page = 0, size = 10) Pageable pageable
+    ) {
+       validateRoleAdmin(principal.getRole());
+       return ResponseEntity.ok(CommonApiResponse.success(
+           UserDetailsPageResponse.of(userReadService.getUserList(pageable))
+       ));
+    }
+
+    @GetMapping
+    public ResponseEntity<CommonApiResponse<UserDetailsResponse>> getUserDetails(
+        @AuthenticationPrincipal CustomUserPrincipal principal
+    ) {
+        validateRoleAdmin(principal.getRole());
+        return ResponseEntity.ok(CommonApiResponse.success(
+           UserDetailsResponse.of(userReadService.getUser(UUID.fromString(principal.getUserId())))
+        ));
+    }
+
+
+    // HELPER METHODS =================================================
+    private void validateRoleAdmin(Role role) {
+        if(!role.equals(Role.ADMIN)) throw new ForbiddenException(ResponseCode.FORBIDDEN);
     }
 }
