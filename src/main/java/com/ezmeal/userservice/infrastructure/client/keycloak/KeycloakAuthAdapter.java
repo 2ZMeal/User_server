@@ -28,6 +28,14 @@ public class KeycloakAuthAdapter {
      */
     public KeycloakTokenResponse getTokenResponse(String email, String password) {
         try {
+            log.info(
+                "Keycloak login request. email={}, passwordExists={}, clientId={}, clientSecretExists={}, clientSecretLength={}",
+                email,
+                password != null && !password.isBlank(),
+                keycloakProperties.clientId(),
+                keycloakProperties.clientSecret() != null && !keycloakProperties.clientSecret().isBlank(),
+                keycloakProperties.clientSecret() == null ? 0 : keycloakProperties.clientSecret().length()
+            );
             return keycloakAuthClient.getToken(createTokenIssueForm(email, password));
         } catch (FeignException e) {
             log.warn(
