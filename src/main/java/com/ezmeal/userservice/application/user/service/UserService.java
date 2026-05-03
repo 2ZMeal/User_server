@@ -4,6 +4,7 @@ import com.ezmeal.common.enums.Role;
 import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
 import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
+import com.ezmeal.userservice.application.user.event.UserDeletedApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.domain.user.model.User;
@@ -133,6 +134,7 @@ public class UserService {
         user.delete(userId.toString());
 
         userRepository.save(user);
+        eventPublisher.publishEvent(UserDeletedApplicationEvent.from(user));
     }
 
 

@@ -12,4 +12,9 @@ public class KafkaTopicConfig {
     public NewTopic userCreatedTopic() {
         return new NewTopic(KafkaTopics.USER_CREATED, 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic userDeletedTopic() {
+        return new NewTopic(KafkaTopics.USER_DELETED, 1, (short) 1);
+    }
 }
