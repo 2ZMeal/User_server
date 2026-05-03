@@ -31,9 +31,11 @@ public class KeycloakAuthAdapter {
             return keycloakAuthClient.getToken(createTokenIssueForm(email, password));
         } catch (FeignException e) {
             log.warn(
-                "KeycloakAuthAdapter :: getTokenResponse() - failed. status={}, email={}",
+                "KeycloakAuthAdapter :: getTokenResponse() - failed. status={}, email={}, body={}",
                 e.status(),
-                email
+                email,
+                e.contentUTF8(),
+                e
             );
             throw KeycloakExceptionMapper.map(e, KeycloakOperation.GET_TOKEN_RESPONSE);
         } catch (Exception e) {
