@@ -2,6 +2,11 @@
 FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 
+ARG GPR_USER
+ARG GPR_TOKEN
+ENV GPR_USER=${GPR_USER}
+ENV GPR_TOKEN=${GPR_TOKEN}
+
 # 빌드에 필요한 파일 복사
 COPY gradlew .
 COPY gradle gradle
