@@ -98,6 +98,7 @@ public class UserService {
                 command.toKeycloakCreateUserCommand()
             );
 
+            validateEmailExists(command.email());
             user = userRepository.saveAndFlush(
                 User.create(command.toCreateUserCommand(keycloakId))
             );
@@ -161,6 +162,10 @@ public class UserService {
         }
     }
 
+    /**
+     * Check is email already exists and active
+     * @param email
+     */
     private void validateEmailExists(String email) {
         if(userReadService.isEmailExists(email)) {
             throw new PolicyException(ResponseCode.USER_ALREADY_EXISTS);

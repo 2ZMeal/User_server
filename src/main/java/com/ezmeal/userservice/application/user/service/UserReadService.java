@@ -2,6 +2,7 @@ package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.UserReadResult;
+import com.ezmeal.userservice.common.exception.PolicyException;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.domain.user.repos.UserRepository;
 import java.util.UUID;
@@ -45,5 +46,15 @@ public class UserReadService {
      */
     public Page<UserReadResult> getUserList(Pageable pageable) {
         return userRepository.findAllActive(pageable).map(UserReadResult::from);
+    }
+
+    /**
+     * Check is nickname already exists and active
+     * @param nickname
+     */
+    public void isNicknameExists(String nickname) {
+        if(!userRepository.isNicknameExists(nickname)) {
+            throw new PolicyException(ResponseCode.NICKNAME_ALREADY_EXISTS);
+        }
     }
 }

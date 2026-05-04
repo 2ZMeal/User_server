@@ -4,7 +4,6 @@ import com.ezmeal.common.enums.Role;
 import com.ezmeal.common.exception.types.ForbiddenException;
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
-import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.application.user.service.UserReadService;
 import com.ezmeal.userservice.application.user.service.UserService;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
@@ -133,6 +132,15 @@ public class UserController {
         return ResponseEntity.ok(CommonApiResponse.success(
            UserResponse.of(userService.updateUser(UUID.fromString(principal.getUserId()), request.toCommand()))
         ));
+    }
+
+    @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복검사를 수행합니다.")
+    @GetMapping("/check?nickname={nickname}")
+    public ResponseEntity<CommonApiResponse<Void>> checkNickname(
+        @PathVariable String nickname
+    ) {
+        userReadService.isNicknameExists(nickname);
+        return ResponseEntity.ok(CommonApiResponse.success());
     }
 
     // HELPER METHODS =================================================

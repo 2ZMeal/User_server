@@ -14,4 +14,6 @@ public interface UserRepository {
     User saveAndFlush(User user);
     void delete(User user);
     Page<User> findAllActive(Pageable pageable);
+
+    Boolean isNicknameExists(String nickname);
 }
