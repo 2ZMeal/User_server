@@ -3,6 +3,7 @@ package com.ezmeal.userservice.domain.user.model;
 import com.ezmeal.common.entity.BaseEntity;
 import com.ezmeal.common.enums.Role;
 import com.ezmeal.userservice.application.user.dto.CreateUserCommand;
+import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.domain.user.code.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -65,6 +66,11 @@ public class User extends BaseEntity{
         user.lastLoginAt = LocalDateTime.now();
         user.status = Status.ENABLED;
         return user;
+    }
+
+    public void update(UpdateUserCommand command) {
+        this.nickname = !(command.nickname() == null || command.nickname().isBlank()) ? command.nickname() : this.nickname;
+        this.name = !(command.name() == null || command.name().isBlank()) ? command.name() : this.name;
     }
 
     public void disable() {

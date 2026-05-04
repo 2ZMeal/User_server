@@ -4,6 +4,7 @@ import com.ezmeal.common.enums.Role;
 import com.ezmeal.common.exception.types.ForbiddenException;
 import com.ezmeal.common.response.CommonApiResponse;
 import com.ezmeal.common.security.principal.CustomUserPrincipal;
+import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.application.user.service.UserReadService;
 import com.ezmeal.userservice.application.user.service.UserService;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
@@ -13,6 +14,7 @@ import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import com.ezmeal.userservice.presentation.user.payload.UpdateUserRequest;
 import com.ezmeal.userservice.presentation.user.payload.UserDetailsPageResponse;
 import com.ezmeal.userservice.presentation.user.payload.UserDetailsResponse;
 import com.ezmeal.userservice.presentation.user.payload.UserResponse;
@@ -120,6 +122,17 @@ public class UserController {
     ) {
         userService.withdraw(UUID.fromString(principal.getUserId()));
         return ResponseEntity.ok(CommonApiResponse.success());
+    }
+
+    @Operation(summary = "회원정보 수정", description = "회원의 본인 정보를 수정합니다.")
+    @PatchMapping("/me")
+    public ResponseEntity<CommonApiResponse<?>> updateMe(
+        @AuthenticationPrincipal CustomUserPrincipal principal,
+        @RequestBody UpdateUserRequest request
+    ) {
+        return ResponseEntity.ok(CommonApiResponse.success(
+           UserResponse.of(userService.updateUser(UUID.fromString(principal.getUserId()), request.toCommand()))
+        ));
     }
 
     // HELPER METHODS =================================================
