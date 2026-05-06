@@ -128,7 +128,7 @@ public class UserController {
     @PatchMapping("/me")
     public ResponseEntity<CommonApiResponse<?>> updateMe(
         @AuthenticationPrincipal CustomUserPrincipal principal,
-        @RequestBody UpdateUserRequest request
+        @RequestBody @Valid UpdateUserRequest request
     ) {
         return ResponseEntity.ok(CommonApiResponse.success(
            UserResponse.of(userService.updateUser(UUID.fromString(principal.getUserId()), request.toCommand()))
