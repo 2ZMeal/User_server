@@ -24,6 +24,7 @@ public enum ResponseCode implements ErrorCode {
     // USER(2),
     USER_NOT_FOUND("USER_200", HttpStatus.NOT_FOUND, "User not found"),
     USER_ALREADY_EXISTS("USER_201", HttpStatus.CONFLICT, "User already exists"),
+    NICKNAME_ALREADY_EXISTS("USER_202", HttpStatus.CONFLICT, "Nickname already exists"),
 
 
     ;

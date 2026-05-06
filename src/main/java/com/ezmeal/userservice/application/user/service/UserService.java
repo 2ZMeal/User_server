@@ -3,6 +3,8 @@ package com.ezmeal.userservice.application.user.service;
 import com.ezmeal.common.enums.Role;
 import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
+import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
+import com.ezmeal.userservice.application.user.dto.UpdateUserResult;
 import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
 import com.ezmeal.userservice.application.user.event.UserDeletedApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
@@ -96,6 +98,8 @@ public class UserService {
                 command.toKeycloakCreateUserCommand()
             );
 
+            validateEmailExists(command.email());
+            userReadService.validateNicknameExists(command.nickname());
             user = userRepository.saveAndFlush(
                 User.create(command.toCreateUserCommand(keycloakId))
             );
@@ -137,6 +141,18 @@ public class UserService {
         eventPublisher.publishEvent(UserDeletedApplicationEvent.from(user));
     }
 
+    @Transactional
+    public UpdateUserResult updateUser(UUID userId, UpdateUserCommand command) {
+        User user = userRepository.findActive(userId)
+            .orElseThrow(() -> new NotFoundException(ResponseCode.USER_NOT_FOUND));
+        if(!user.getNickname().equals(command.nickname())) {
+            userReadService.validateNicknameExists(command.nickname());
+        }
+        user.update(command);
+        userRepository.save(user);
+        return UpdateUserResult.from(user);
+    }
+
 
     // HELPER METHODS =======================================================
 
@@ -150,6 +166,10 @@ public class UserService {
         }
     }
 
+    /**
+     * Check is email already exists and active
+     * @param email
+     */
     private void validateEmailExists(String email) {
         if(userReadService.isEmailExists(email)) {
             throw new PolicyException(ResponseCode.USER_ALREADY_EXISTS);

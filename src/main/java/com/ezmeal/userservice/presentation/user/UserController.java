@@ -13,6 +13,7 @@ import com.ezmeal.userservice.presentation.user.payload.ReissueRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignInRequest;
 import com.ezmeal.userservice.presentation.user.payload.SignUpRequest;
 import com.ezmeal.userservice.presentation.user.payload.TokenResponse;
+import com.ezmeal.userservice.presentation.user.payload.UpdateUserRequest;
 import com.ezmeal.userservice.presentation.user.payload.UserDetailsPageResponse;
 import com.ezmeal.userservice.presentation.user.payload.UserDetailsResponse;
 import com.ezmeal.userservice.presentation.user.payload.UserResponse;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -119,6 +121,26 @@ public class UserController {
         @AuthenticationPrincipal CustomUserPrincipal principal
     ) {
         userService.withdraw(UUID.fromString(principal.getUserId()));
+        return ResponseEntity.ok(CommonApiResponse.success());
+    }
+
+    @Operation(summary = "회원정보 수정", description = "회원의 본인 정보를 수정합니다.")
+    @PatchMapping("/me")
+    public ResponseEntity<CommonApiResponse<?>> updateMe(
+        @AuthenticationPrincipal CustomUserPrincipal principal,
+        @RequestBody @Valid UpdateUserRequest request
+    ) {
+        return ResponseEntity.ok(CommonApiResponse.success(
+           UserResponse.of(userService.updateUser(UUID.fromString(principal.getUserId()), request.toCommand()))
+        ));
+    }
+
+    @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복검사를 수행합니다.")
+    @GetMapping("/check")
+    public ResponseEntity<CommonApiResponse<Void>> checkNickname(
+        @RequestParam String nickname
+    ) {
+        userReadService.validateNicknameExists(nickname);
         return ResponseEntity.ok(CommonApiResponse.success());
     }
 

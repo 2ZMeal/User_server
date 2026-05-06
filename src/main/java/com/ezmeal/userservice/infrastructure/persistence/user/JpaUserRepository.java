@@ -13,6 +13,7 @@ public interface JpaUserRepository extends JpaRepository<User, UUID>, UserReposi
     Optional<User> findByIdAndDeletedAtIsNull(UUID id);
     Optional<User> findByEmailAndDeletedAtIsNull(String email);
     Page<User> findAllByDeletedAtIsNull(Pageable pageable);
+    Optional<User> findByNicknameAndDeletedAtIsNull(String nickname);
 
     // Override ===============================================================
 
@@ -26,4 +27,9 @@ public interface JpaUserRepository extends JpaRepository<User, UUID>, UserReposi
 
     @Override
     default Page<User> findAllActive(Pageable pageable) {return findAllByDeletedAtIsNull(pageable);};
+
+    @Override
+    default Boolean isNicknameExists(String nickname){
+        return findByNicknameAndDeletedAtIsNull(nickname).isPresent();
+    }
 }
