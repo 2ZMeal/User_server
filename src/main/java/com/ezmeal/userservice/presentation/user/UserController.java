@@ -140,7 +140,7 @@ public class UserController {
     public ResponseEntity<CommonApiResponse<Void>> checkNickname(
         @RequestParam String nickname
     ) {
-        userReadService.isNicknameExists(nickname);
+        userReadService.validateNicknameExists(nickname);
         return ResponseEntity.ok(CommonApiResponse.success());
     }
 

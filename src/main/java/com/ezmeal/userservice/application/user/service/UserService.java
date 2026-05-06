@@ -99,6 +99,7 @@ public class UserService {
             );
 
             validateEmailExists(command.email());
+            userReadService.validateNicknameExists(command.nickname());
             user = userRepository.saveAndFlush(
                 User.create(command.toCreateUserCommand(keycloakId))
             );
@@ -145,7 +146,7 @@ public class UserService {
         User user = userRepository.findActive(userId)
             .orElseThrow(() -> new NotFoundException(ResponseCode.USER_NOT_FOUND));
         if(!user.getNickname().equals(command.nickname())) {
-            userReadService.isNicknameExists(command.nickname());
+            userReadService.validateNicknameExists(command.nickname());
         }
         user.update(command);
         userRepository.save(user);

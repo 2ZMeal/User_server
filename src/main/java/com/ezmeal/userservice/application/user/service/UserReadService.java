@@ -52,7 +52,7 @@ public class UserReadService {
      * Check is nickname already exists and active
      * @param nickname
      */
-    public void isNicknameExists(String nickname) {
+    public void validateNicknameExists(String nickname) {
         if(userRepository.isNicknameExists(nickname)) {
             throw new PolicyException(ResponseCode.NICKNAME_ALREADY_EXISTS);
         }
