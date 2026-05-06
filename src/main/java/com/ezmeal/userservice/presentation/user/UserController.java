@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -135,9 +136,9 @@ public class UserController {
     }
 
     @Operation(summary = "닉네임 중복 검사", description = "닉네임 중복검사를 수행합니다.")
-    @GetMapping("/check?nickname={nickname}")
+    @GetMapping("/check")
     public ResponseEntity<CommonApiResponse<Void>> checkNickname(
-        @PathVariable String nickname
+        @RequestParam String nickname
     ) {
         userReadService.isNicknameExists(nickname);
         return ResponseEntity.ok(CommonApiResponse.success());
