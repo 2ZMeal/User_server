@@ -53,7 +53,7 @@ public class UserReadService {
      * @param nickname
      */
     public void isNicknameExists(String nickname) {
-        if(!userRepository.isNicknameExists(nickname)) {
+        if(userRepository.isNicknameExists(nickname)) {
             throw new PolicyException(ResponseCode.NICKNAME_ALREADY_EXISTS);
         }
     }
