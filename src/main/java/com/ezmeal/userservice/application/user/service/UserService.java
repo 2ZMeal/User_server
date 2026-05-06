@@ -144,6 +144,9 @@ public class UserService {
     public UpdateUserResult updateUser(UUID userId, UpdateUserCommand command) {
         User user = userRepository.findActive(userId)
             .orElseThrow(() -> new NotFoundException(ResponseCode.USER_NOT_FOUND));
+        if(!user.getNickname().equals(command.nickname())) {
+            userReadService.isNicknameExists(command.nickname());
+        }
         user.update(command);
         userRepository.save(user);
         return UpdateUserResult.from(user);
