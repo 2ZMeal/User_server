@@ -115,6 +115,7 @@ public class UserService {
             );
 
             eventPublisher.publishEvent( UserCreateApplicationEvent.from(user));
+            log.info("UserService :: signUp() :: Create User success!");
 
             return keycloakAuthAdapter.getTokenResponse(command.email(), command.password()).toResponse();
         } catch (Exception e) {

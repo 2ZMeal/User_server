@@ -5,6 +5,7 @@ plugins {
 }
 ext {
     springCloudVersion = "2025.0.2"
+    datasourceMicrometerVersion = "1.4.1"
 }
 
 group = 'com.ezmeal'
@@ -36,7 +37,7 @@ repositories {
 
 dependencies {
     // internal common module
-    implementation 'com.ezmeal:common:0.0.5'
+    implementation 'com.ezmeal:common:0.1.2'
 
     // explicit declaration
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -58,6 +59,7 @@ dependencies {
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "net.ttddyy.observation:datasource-micrometer-bom:${datasourceMicrometerVersion}"
     }
 }
 
