@@ -5,7 +5,7 @@ import com.ezmeal.userservice.domain.user.model.User;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record UserCreateApplicationEvent(
+public record UserCreatedApplicationEvent(
     UUID userId,
     String keycloakId,
     String email,
@@ -15,8 +15,8 @@ public record UserCreateApplicationEvent(
     LocalDateTime createdAt
 ) {
 
-    public static UserCreateApplicationEvent from(User user) {
-        return new UserCreateApplicationEvent(
+    public static UserCreatedApplicationEvent from(User user) {
+        return new UserCreatedApplicationEvent(
             user.getId(),
             user.getKeycloakId(),
             user.getEmail(),

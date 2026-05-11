@@ -1,6 +1,7 @@
 package com.ezmeal.userservice.infrastructure.kafka.payload;
 
-import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
+import com.ezmeal.common.message.DomainEvent;
+import com.ezmeal.userservice.application.user.event.UserCreatedApplicationEvent;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,9 +16,9 @@ public record UserCreatedEvent(
     String nickname,
     String role,
     LocalDateTime createdAt
-) {
+) implements DomainEvent {
 
-    public static UserCreatedEvent of(UserCreateApplicationEvent event) {
+    public static UserCreatedEvent of(UserCreatedApplicationEvent event) {
         return new UserCreatedEvent(
             UUID.randomUUID(),
             Instant.now(),

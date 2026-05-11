@@ -5,7 +5,7 @@ import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
 import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.application.user.dto.UpdateUserResult;
-import com.ezmeal.userservice.application.user.event.UserCreateApplicationEvent;
+import com.ezmeal.userservice.application.user.event.UserCreatedApplicationEvent;
 import com.ezmeal.userservice.application.user.event.UserDeletedApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
@@ -114,7 +114,7 @@ public class UserService {
                 user.getId().toString()
             );
 
-            eventPublisher.publishEvent( UserCreateApplicationEvent.from(user));
+            eventPublisher.publishEvent( UserCreatedApplicationEvent.from(user));
             log.info("UserService :: signUp() :: Create User success!");
 
             return keycloakAuthAdapter.getTokenResponse(command.email(), command.password()).toResponse();
