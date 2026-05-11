@@ -14,7 +14,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableConfigurationProperties(KeycloakProperties.class)
 @EnableJpaRepositories(basePackages = {
     "com.ezmeal.userservice",
-    "com.ezmeal.common.message.outbox"
+    "com.ezmeal.common"
 })
 @SpringBootApplication(scanBasePackages = {
     "com.ezmeal.userservice",
