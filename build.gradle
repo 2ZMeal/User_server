@@ -37,7 +37,7 @@ repositories {
 
 dependencies {
     // internal common module
-    implementation 'com.ezmeal:common:0.1.1'
+    implementation 'com.ezmeal:common:0.1.3'
 
     // explicit declaration
     implementation 'org.springframework.boot:spring-boot-starter-web'
