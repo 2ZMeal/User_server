@@ -1,6 +1,7 @@
 package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.enums.Role;
+import com.ezmeal.common.exception.CustomException;
 import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
 import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -254,18 +256,36 @@ public class UserService {
         validateEmailExists(command.email());
         userReadService.validateNicknameExists(command.nickname());
 
-        User user = userRepository.saveAndFlush(
-            User.create(command.toCreateUserCommand(keycloakId))
-        );
+        try {
+            User user = userRepository.saveAndFlush(
+                User.create(command.toCreateUserCommand(keycloakId))
+            );
 
-        log.debug(
-            "UserService :: signUp() - local user created. userId={}, keycloakId={}, email={}",
-            user.getId(),
-            keycloakId,
-            command.email()
-        );
+            log.debug(
+                "UserService :: signUp() - local user created. userId={}, keycloakId={}, email={}",
+                user.getId(),
+                keycloakId,
+                command.email()
+            );
 
-        return user;
+            return user;
+        } catch (DataIntegrityViolationException e) {
+            throw mapSignUpUniqueViolation(e);
+        }
+    }
+
+    private PolicyException mapSignUpUniqueViolation(DataIntegrityViolationException e) {
+        String message = e.getMostSpecificCause().getMessage();
+
+        if (message != null && message.contains("uk_p_user_email_active")) {
+            return new PolicyException(ResponseCode.USER_ALREADY_EXISTS);
+        }
+
+        if (message != null && message.contains("uk_p_user_nickname_active")) {
+            return new PolicyException(ResponseCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        return new PolicyException(ResponseCode.USER_ALREADY_EXISTS);
     }
 
     private void configureKeycloakUser(String keycloakId, UUID userId, Role role) {
