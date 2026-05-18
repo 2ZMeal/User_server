@@ -1,6 +1,7 @@
 package com.ezmeal.userservice.application.user.service;
 
 import com.ezmeal.common.enums.Role;
+import com.ezmeal.common.exception.CustomException;
 import com.ezmeal.common.exception.types.NotFoundException;
 import com.ezmeal.userservice.application.user.dto.SignUpCommand;
 import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -88,38 +90,22 @@ public class UserService {
     @Transactional
     public TokenResponse signUp(SignUpCommand command) {
         validateSignUpRole(command.role());
-        validateEmailExists(command.email());
 
         String keycloakId = null;
         User user = null;
 
         try {
-            keycloakId = keycloakAdminAdapter.createUser(
-                command.toKeycloakCreateUserCommand()
-            );
+            keycloakId = createKeycloakUser(command);
 
-            validateEmailExists(command.email());
-            userReadService.validateNicknameExists(command.nickname());
-            user = userRepository.saveAndFlush(
-                User.create(command.toCreateUserCommand(keycloakId))
-            );
+            user = createLocalUser(command, keycloakId);
 
-            keycloakAdminAdapter.assignRealmRole(
-                keycloakId,
-                command.role()
-            );
+            configureKeycloakUser(keycloakId, user.getId(), command.role());
 
-            keycloakAdminAdapter.updateServiceUserIdAttribute(
-                keycloakId,
-                user.getId().toString()
-            );
+            publishUserCreatedEvent(user);
 
-            eventPublisher.publishEvent( UserCreatedApplicationEvent.from(user));
-            log.info("UserService :: signUp() :: Create User success!");
-
-            return keycloakAuthAdapter.getTokenResponse(command.email(), command.password()).toResponse();
+            return issueToken(command);
         } catch (Exception e) {
-            compensateSignUpFailure(keycloakId, user);
+            compensateSignUpFailure(keycloakId, user, command.email());
             throw e;
         }
     }
@@ -182,29 +168,173 @@ public class UserService {
      * @param keycloakId
      * @param user
      */
-    private void compensateSignUpFailure(String keycloakId, User user) {
-        if(user != null && user.getId() != null) {
-            try{
-                userRepository.delete(user);
-            } catch (Exception e){
-                log.error(
-                    "UserService :: compensateSignUpFailure() - failed to delete p_user, userId={}",
-                    user.getId(),
-                    e
-                );
-            }
+    private void compensateSignUpFailure(String keycloakId, User user, String email) {
+        log.warn(
+            "UserService :: compensateSignUpFailure() - start. userId={}, keycloakId={}, email={}",
+            user != null ? user.getId() : null,
+            keycloakId,
+            email
+        );
+
+        compensateLocalUser(user, email);
+        compensateKeycloakUser(keycloakId, email);
+
+        log.warn(
+            "UserService :: compensateSignUpFailure() - completed. userId={}, keycloakId={}, email={}",
+            user != null ? user.getId() : null,
+            keycloakId,
+            email
+        );
+    }
+
+    private void compensateLocalUser(User user, String email) {
+        if (user == null || user.getId() == null) {
+            return;
         }
 
-        if(keycloakId != null && !keycloakId.isBlank()) {
-            try{
-                keycloakAdminAdapter.deleteUser(keycloakId);
-            } catch (Exception e){
-                log.error(
-                    "UserService :: compensateSignUpFailure() - failed to delete keycloak user, keycloakId={}",
-                    keycloakId,
-                    e
-                );
-            }
+        try {
+            userRepository.delete(user);
+
+            log.warn(
+                "UserService :: compensateLocalUser() - local user deleted. userId={}, email={}",
+                user.getId(),
+                email
+            );
+        } catch (Exception e) {
+            log.error(
+                "UserService :: compensateLocalUser() - failed to delete local user. userId={}, email={}",
+                user.getId(),
+                email,
+                e
+            );
         }
+    }
+
+    private void compensateKeycloakUser(String keycloakId, String email) {
+        if (keycloakId == null || keycloakId.isBlank()) {
+            return;
+        }
+
+        try {
+            keycloakAdminAdapter.deleteUser(keycloakId);
+
+            log.warn(
+                "UserService :: compensateKeycloakUser() - keycloak user deleted. keycloakId={}, email={}",
+                keycloakId,
+                email
+            );
+        } catch (Exception e) {
+            log.error(
+                "UserService :: compensateKeycloakUser() - failed to delete keycloak user. keycloakId={}, email={}",
+                keycloakId,
+                email,
+                e
+            );
+        }
+    }
+
+    /**
+     * Create User in Keycloak
+     * @param command
+     * @return {@code String} Keycloak user UUID
+     */
+    private String createKeycloakUser(SignUpCommand command) {
+        String keycloakId = keycloakAdminAdapter.createUser(
+            command.toKeycloakCreateUserCommand()
+        );
+
+        log.debug(
+            "UserService :: signUp() - keycloak user created. keycloakId={}, email={}",
+            keycloakId,
+            command.email()
+        );
+
+        return keycloakId;
+    }
+
+    private User createLocalUser(SignUpCommand command, String keycloakId) {
+        validateEmailExists(command.email());
+        userReadService.validateNicknameExists(command.nickname());
+
+        try {
+            User user = userRepository.saveAndFlush(
+                User.create(command.toCreateUserCommand(keycloakId))
+            );
+
+            log.debug(
+                "UserService :: signUp() - local user created. userId={}, keycloakId={}, email={}",
+                user.getId(),
+                keycloakId,
+                command.email()
+            );
+
+            return user;
+        } catch (DataIntegrityViolationException e) {
+            throw mapSignUpUniqueViolation(e);
+        }
+    }
+
+    private PolicyException mapSignUpUniqueViolation(DataIntegrityViolationException e) {
+        String message = e.getMostSpecificCause().getMessage();
+
+        if (message != null && message.contains("uk_p_user_email_active")) {
+            return new PolicyException(ResponseCode.USER_ALREADY_EXISTS);
+        }
+
+        if (message != null && message.contains("uk_p_user_nickname_active")) {
+            return new PolicyException(ResponseCode.NICKNAME_ALREADY_EXISTS);
+        }
+
+        return new PolicyException(ResponseCode.USER_ALREADY_EXISTS);
+    }
+
+    private void configureKeycloakUser(String keycloakId, UUID userId, Role role) {
+        assignKeycloakRole(keycloakId, role);
+        updateKeycloakServiceUserIdAttribute(keycloakId, userId);
+    }
+
+    private void assignKeycloakRole(String keycloakId, Role role) {
+        keycloakAdminAdapter.assignRealmRole(keycloakId, role);
+
+        log.debug(
+            "UserService :: signUp() - keycloak role assigned. keycloakId={}, role={}",
+            keycloakId,
+            role
+        );
+    }
+
+    private void updateKeycloakServiceUserIdAttribute(String keycloakId, UUID userId) {
+        keycloakAdminAdapter.updateServiceUserIdAttribute(
+            keycloakId,
+            userId.toString()
+        );
+
+        log.debug(
+            "UserService :: signUp() - keycloak service_user_id attribute updated. keycloakId={}, userId={}",
+            keycloakId,
+            userId
+        );
+    }
+
+    private void publishUserCreatedEvent(User user) {
+        eventPublisher.publishEvent(UserCreatedApplicationEvent.from(user));
+
+        log.debug(
+            "UserService :: signUp() - user created application event published. userId={}",
+            user.getId()
+        );
+    }
+
+    private TokenResponse issueToken(SignUpCommand command) {
+        TokenResponse tokenResponse = keycloakAuthAdapter
+            .getTokenResponse(command.email(), command.password())
+            .toResponse();
+
+        log.info(
+            "UserService :: signUp() - token issued. email={}",
+            command.email()
+        );
+
+        return tokenResponse;
     }
 }

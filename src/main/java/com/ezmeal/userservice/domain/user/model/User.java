@@ -34,13 +34,13 @@ public class User extends BaseEntity{
     @Column(name="keycloak_id", updatable = false, nullable = false, length = 50)
     private String keycloakId;
 
-    @Column(name="nickname", unique = true, length = 20)
+    @Column(name="nickname", length = 20)
     private String nickname;
 
     @Column(name="name", nullable = false, length = 10)
     private String name;
 
-    @Column(name="email", nullable = false, unique = true, length=30)
+    @Column(name="email", nullable = false, length=30)
     private String email;
 
     @Enumerated(EnumType.STRING)
