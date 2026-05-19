@@ -5,6 +5,7 @@ plugins {
 }
 ext {
     springCloudVersion = "2025.0.2"
+    datasourceMicrometerVersion = "1.4.1"
 }
 
 group = 'com.ezmeal'
@@ -36,7 +37,7 @@ repositories {
 
 dependencies {
     // internal common module
-    implementation 'com.ezmeal:common:0.0.3'
+    implementation 'com.ezmeal:common:0.1.4'
 
     // explicit declaration
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -47,12 +48,18 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     testCompileOnly 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testAnnotationProcessor 'org.projectlombok:lombok'
+
+    // additional dependencies
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
 }
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion"
+        mavenBom "net.ttddyy.observation:datasource-micrometer-bom:${datasourceMicrometerVersion}"
     }
 }
 
@@ -62,7 +69,13 @@ tasks.named('test') {
 
 tasks.register("checkGpr") {
     doLast {
-        println "gpr.user = " + providers.gradleProperty("gpr.user").orNull
-        println "gpr.token exists = " + (providers.gradleProperty("gpr.token").orNull != null)
+        def user = providers.gradleProperty("gpr.user")
+                .orElse(providers.environmentVariable("GPR_USER"))
+                .orNull
+        def token = providers.gradleProperty("gpr.token")
+                .orElse(providers.environmentVariable("GPR_TOKEN"))
+                .orNull
+        println "gpr.user exists = " + (user != null)
+        println "gpr.token exists = " + (token != null)
     }
 }

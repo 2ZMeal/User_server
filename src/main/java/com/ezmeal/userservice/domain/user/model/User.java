@@ -2,6 +2,8 @@ package com.ezmeal.userservice.domain.user.model;
 
 import com.ezmeal.common.entity.BaseEntity;
 import com.ezmeal.common.enums.Role;
+import com.ezmeal.userservice.application.user.dto.CreateUserCommand;
+import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.domain.user.code.Status;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,7 +22,7 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "p_user", schema = "user_db")
+@Table(name = "p_user")
 public class User extends BaseEntity{
 
     @Id
@@ -29,31 +31,49 @@ public class User extends BaseEntity{
     @Column(name="id", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(name="nickname", nullable = false, unique = true)
+    @Column(name="keycloak_id", updatable = false, nullable = false, length = 50)
+    private String keycloakId;
+
+    @Column(name="nickname", length = 20)
     private String nickname;
 
-    @Column(name="name", nullable = false)
+    @Column(name="name", nullable = false, length = 10)
     private String name;
 
-    @Column(name="email", nullable = false, unique = true)
+    @Column(name="email", nullable = false, length=30)
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length=10)
     private Role role;
 
-    @Column(name = "last_login_at", nullable = false)
+    @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length=10)
     private Status status;
 
 
     // Factory Methods ========================================================================
-    public static User create(){
-        // TODO : Complete after extends BaseEntity
+    public static User create(CreateUserCommand command){
         User user = new User();
+        user.keycloakId = command.keycloakId();
+        user.nickname = command.nickname() != null ? command.nickname() : command.name();
+        user.name = command.name();
+        user.email = command.email();
+        user.role = command.role();
+        user.lastLoginAt = LocalDateTime.now();
+        user.status = Status.ENABLED;
         return user;
+    }
+
+    public void update(UpdateUserCommand command) {
+        this.nickname = !(command.nickname() == null || command.nickname().isBlank()) ? command.nickname() : this.nickname;
+        this.name = !(command.name() == null || command.name().isBlank()) ? command.name() : this.name;
+    }
+
+    public void disable() {
+        this.status = Status.DISABLED;
     }
 }

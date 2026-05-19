@@ -1,0 +1,11 @@
+package com.ezmeal.userservice.infrastructure.kafka;
+
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+public final class KafkaTopics {
+
+    public static final String USER_CREATED = "user.created";
+    public static final String USER_DELETED = "user.deleted";
+    public static final String USER_UPDATED = "user.updated";
+}
