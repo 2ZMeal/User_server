@@ -8,6 +8,7 @@ import com.ezmeal.userservice.application.user.dto.UpdateUserCommand;
 import com.ezmeal.userservice.application.user.dto.UpdateUserResult;
 import com.ezmeal.userservice.application.user.event.UserCreatedApplicationEvent;
 import com.ezmeal.userservice.application.user.event.UserDeletedApplicationEvent;
+import com.ezmeal.userservice.application.user.event.UserUpdatedApplicationEvent;
 import com.ezmeal.userservice.common.exception.PolicyException;
 import com.ezmeal.userservice.common.exception.code.ResponseCode;
 import com.ezmeal.userservice.domain.user.model.User;
@@ -137,6 +138,8 @@ public class UserService {
         }
         user.update(command);
         userRepository.save(user);
+
+        eventPublisher.publishEvent(UserUpdatedApplicationEvent.from(user));
         return UpdateUserResult.from(user);
     }
 

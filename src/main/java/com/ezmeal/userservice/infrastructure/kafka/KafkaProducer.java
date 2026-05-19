@@ -3,8 +3,10 @@ package com.ezmeal.userservice.infrastructure.kafka;
 import com.ezmeal.common.message.CommonKafkaEventPublisher;
 import com.ezmeal.userservice.application.user.event.UserCreatedApplicationEvent;
 import com.ezmeal.userservice.application.user.event.UserDeletedApplicationEvent;
+import com.ezmeal.userservice.application.user.event.UserUpdatedApplicationEvent;
 import com.ezmeal.userservice.infrastructure.kafka.payload.UserCreatedEvent;
 import com.ezmeal.userservice.infrastructure.kafka.payload.UserDeletedEvent;
+import com.ezmeal.userservice.infrastructure.kafka.payload.UserUpdatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -35,6 +37,16 @@ public class KafkaProducer {
             event.userId().toString(),
             "USER_DELETED",
             UserDeletedEvent.of(event)
+        );
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void publishUpdatedEvent(UserUpdatedApplicationEvent event) {
+        eventPublisher.publish(
+            KafkaTopics.USER_UPDATED,
+            event.userId().toString(),
+            "USER_UPDATED",
+            UserUpdatedEvent.of(event)
         );
     }
 }
